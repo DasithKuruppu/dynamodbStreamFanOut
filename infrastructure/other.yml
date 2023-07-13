@@ -1,0 +1,54 @@
+## EVENTS TOPIC FOR FANNING OUT DATA TO DOWNSTREAM SERVICES
+EventsSNSTopic:
+  Type: AWS::SNS::Topic
+  Properties:
+    TopicName: events
+
+## EVENTBRIDGE PIPE TO CONNECT DYNAMODB STREAM TO SNS TOPIC
+EventBridgeEventStorePipeRole:
+  Type: AWS::IAM::Role
+  Properties:
+    AssumeRolePolicyDocument:
+      Version: "2012-10-17"
+      Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+              - pipes.amazonaws.com
+          Action:
+            - sts:AssumeRole
+    Policies:
+      - PolicyName: SourcePolicy
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - "dynamodb:DescribeStream"
+                - "dynamodb:GetRecords"
+                - "dynamodb:GetShardIterator"
+                - "dynamodb:ListStreams"
+              Resource: !GetAtt EventsStore.StreamArn
+      - PolicyName: TargetPolicy
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - "sns:Publish"
+              Resource: !Ref EventsSNSTopic
+
+EventBridgeEventsStorePipe:
+  Type: AWS::Pipes::Pipe
+  Properties:
+    Description: "Event store stream to eventbridge bus"
+    RoleArn: !GetAtt EventBridgeEventStorePipeRole.Arn
+    Source: !GetAtt EventsStore.StreamArn
+    SourceParameters:
+      FilterCriteria:
+        Filters:
+          - Pattern: '{"eventName": ["INSERT","MODIFY"]}'
+      DynamoDBStreamParameters:
+        StartingPosition: LATEST
+        BatchSize: 1
+    Target: !GetAtt EventsSNSTopic.TopicArn

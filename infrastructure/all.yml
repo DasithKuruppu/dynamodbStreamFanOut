@@ -1,0 +1,4 @@
+EventsStore: ${file(./infrastructure/persistanceStoreEvents.yml):EventsStore}
+EventsSNSTopic: ${file(./infrastructure/other.yml):EventsSNSTopic}
+EventBridgeEventStorePipeRole: ${file(./infrastructure/other.yml):EventBridgeEventStorePipeRole}
+EventBridgeEventsStorePipe: ${file(./infrastructure/other.yml):EventBridgeEventsStorePipe}

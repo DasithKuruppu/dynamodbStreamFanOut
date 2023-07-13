@@ -1,0 +1,14 @@
+persistanceUpdate:
+  handler: ./persistanceUpdate/handler.persistanceUpdateHandler
+  events:
+    - sns:
+        arn: !Ref EventsSNSTopic
+        topicName: events
+        filterPolicyScope: MessageBody
+        filterPolicy:
+          dynamodb: 
+            NewImage: 
+              id: 
+                S:
+                  - prefix: "PERSISTANCE#"
+

@@ -1,0 +1,13 @@
+externalIntegration:
+  handler: ./externalIntegration/handler.externalIntegrationHandler
+  events:
+    - sns:
+        arn: !Ref EventsSNSTopic
+        topicName: events
+        filterPolicyScope: MessageBody
+        filterPolicy:
+          dynamodb: 
+            NewImage: 
+              id: 
+                S:
+                  - prefix: "INTEGRATION#"

@@ -1,0 +1,8 @@
+processEvent:
+    handler: ./processEvent/handler.processEventHandler
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt EventsStore.StreamArn
+          filterPatterns:
+            - eventName: [INSERT, MODIFY] # eventType array

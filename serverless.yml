@@ -1,0 +1,23 @@
+app: aws-node-dynamodb-eventbridge-fanout-using-sns
+service: dynamodbEventBridgeFanout
+frameworkVersion: "3"
+package:
+  individually: true
+provider:
+  name: aws
+  runtime: nodejs18.x
+
+functions:
+  processEvent: ${file(./processEvent/infrastructure/processEventHandler.yml):processEvent}
+  notificationSender: ${file(./sendNotification/infrastructure/sendNotificationEventHandler.yml):notificationSender}
+  externalIntegration: ${file(./externalIntegration/infrastructure/externalIntegrationHandler.yml):externalIntegration}
+  persistanceUpdate:  ${file(./persistanceUpdate/infrastructure/persistanceUpdateHandler.yml):persistanceUpdate}
+
+
+resources:
+  Resources: ${file(./infrastructure/all.yml)}
+   
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-iam-roles-per-function
