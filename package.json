@@ -1,5 +1,5 @@
 {
-  "name": "dynamodb-kinesis-fanout",
+  "name": "aws-node-dynamodb-eventbridge-fanout-using-sns",
   "description": "",
   "version": "0.1.0",
   "scripts": {
